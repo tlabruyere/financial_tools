@@ -15,9 +15,6 @@ class Transaction:
     _date_format = ""
 
     def __init__(self, transDate, postDate, desc, category, type, ammount, memo):
-
-        #print(type(transDate))
-
         self._transaction_date = transDate
         self._post_date = postDate
         self._description = desc
@@ -58,11 +55,33 @@ class Chase_Transaction(Transaction):
         Transaction._ammount = float(data[5])
         Transaction._memo = data[6]
 
+class Tranaction_Mgr(object):
+    _transactions = None
+    _total = 0
+
+    def __init__(self):
+        self._transactions = {}
+    
+    def add(self, trans: Transaction):
+        if not trans._description in self._transactions:
+            self._transactions[trans._description] = []
+        self._transactions[trans._description].append(trans)
+        self._total+=1
+
 def read_chase_transaction_csv(filePath):
-    trans = []
+    trans_mgr = Tranaction_Mgr()
     with open(filePath, newline='') as csvfile:
         transaction_reader = csv.reader(csvfile, delimiter=',')
         next(transaction_reader, None) #skip header
         for row in transaction_reader:
-            trans.append(Chase_Transaction(row))
-    return trans
+            trans_mgr.add(Chase_Transaction(row))
+    return trans_mgr
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        log.error('Must provide the csv as the third parameter')
+        sys.exit(1)
+    f = sys.argv[1]
+    trans_mgr = read_chase_transaction_csv(f)
+    print("tot:" + str(trans_mgr._total) + " num " + str(len(trans_mgr._transactions)))
+
