@@ -8,7 +8,7 @@ log = setup_logger(__name__)
 def get_cols(row):
     return row[1:]
 
-def parse_extraction(file_path, delim=','):
+def parse_extraction(file_path, delim=';'):
     data = {}
     # pull columns
     csv_gen = csv_parser.csv_generator(file_path, ";")
@@ -28,4 +28,4 @@ if __name__ == '__main__':
         log.error('Must provide the csv as the third parameter')
         sys.exit(1)
     f = sys.argv[1]
-    data = parse_extraction(f, delim=";")
+    data = parse_extraction(f)
