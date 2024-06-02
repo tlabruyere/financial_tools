@@ -13,6 +13,7 @@ class Transaction:
     _ammount = ""
     _memo = ""
     _date_format = ""
+    _my_category = ""
 
     def __init__(self, transDate, postDate, desc, category, type, ammount, memo):
         self._transaction_date = transDate
@@ -31,6 +32,9 @@ class Transaction:
             ' Type: ' + self._type + \
             ' Ammount: ' + str(self._ammount) + \
             ' Memo: ' + self._memo
+
+    def set_my_category(self, cat):
+        self._my_category = cat
 
 class Chase_Transaction(Transaction):
     _date_format = "%m/%d/%Y"
@@ -55,7 +59,7 @@ class Chase_Transaction(Transaction):
         Transaction._ammount = float(data[5])
         Transaction._memo = data[6]
 
-class Tranaction_Mgr(object):
+class Transaction_Mgr(object):
     _transactions = None
     _total = 0
 
@@ -69,7 +73,7 @@ class Tranaction_Mgr(object):
         self._total+=1
 
 def read_chase_transaction_csv(filePath):
-    trans_mgr = Tranaction_Mgr()
+    trans_mgr = Transaction_Mgr()
     with open(filePath, newline='') as csvfile:
         transaction_reader = csv.reader(csvfile, delimiter=',')
         next(transaction_reader, None) #skip header
