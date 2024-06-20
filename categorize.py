@@ -46,13 +46,6 @@ class Category_Mgr(object):
             return self._categories[name]
         return None
 
-def categorize_transactions(
-        trans_mgr: Transaction_Mgr, 
-        cat_mgr: Category_Mgr):
-    for key in trans_mgr._transactions.keys():
-        for item in trans_mgr._transactions[key]:
-            print(item.print())
-
 if __name__ == '__main__':
     cat_mgr = Category_Mgr('categories.csv')
     for cat in cat_mgr.cat_list():

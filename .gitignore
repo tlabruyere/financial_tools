@@ -6,6 +6,10 @@ __pycache__/
 # Data directory
 data/
 
+# other files
+.DS_Store
+Untitled.ipynb
+
 # C extensions
 *.so
 

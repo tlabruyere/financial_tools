@@ -62,15 +62,30 @@ class Chase_Transaction(Transaction):
 class Transaction_Mgr(object):
     _transactions = None
     _total = 0
+    _trans_iter = None
 
     def __init__(self):
         self._transactions = {}
+        self._trans_iter = None
     
     def add(self, trans: Transaction):
         if not trans._description in self._transactions:
             self._transactions[trans._description] = []
         self._transactions[trans._description].append(trans)
         self._total+=1
+        #set iterator to beginning, if not set
+        if self._trans_iter == None:
+            self._trans_iter = self._transactions[trans._description][-1]
+
+    def get_transactions(self, key):
+        if key in self._transactions:
+            return self._transactions[key]
+        raise ValueError
+
+    # maybe add an interator
+
+
+
 
 def read_chase_transaction_csv(filePath):
     trans_mgr = Transaction_Mgr()
