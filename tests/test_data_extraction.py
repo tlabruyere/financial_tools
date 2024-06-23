@@ -1,6 +1,6 @@
 import unittest
 
-from data_extraction import split_transactions
+from data_extraction import split_transactions, get_cat_from_flat
 
 
 
@@ -26,6 +26,22 @@ class Test_DataExtraction(unittest.TestCase):
         result = split_transactions(data)
         expect = [0.0]
         self.assertEqual(result, expect)
+
+        (11*3.25)
+        data = ''
+        result = split_transactions(data)
+        expect = [0.0]
+        self.assertEqual(result, expect)
+
+    
+    def test_get_cat_from_flat(self):
+        data = [(15.13, 'Travel/Experiences (Including Food, Drink on travel)'), (17.38, 'Spotify'), (17.38, 'HBO'), (18.2, 'Pets supplies'), (18.45, 'Shopping'), (20.0, 'Camera payment (Ring+Armcrest)')]
+        expect = [(15.13, 'Travel/Experiences (Including Food, Drink on travel)'), (17.38, 'HBO'), (18.2, 'Pets supplies'), (18.45, 'Shopping'), (20.0, 'Camera payment (Ring+Armcrest)')]
+        value = 17.38
+        label = get_cat_from_flat(data, value)
+        print('label: ', label)
+        self.assertEqual(label, 'Spotify')
+        self.assertEqual(data, expect)
 
 if __name__ == '__main__':
     unittest.main()

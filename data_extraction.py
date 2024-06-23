@@ -54,7 +54,12 @@ def get_cat_from_flat(data, value):
     'Locate the leftmost value exactly equal to x'
     idx = bisect_left(data, (value, ""))
     if idx != len(data) and data[idx][0] == value:
-        return data[idx][1] 
+        label = data[idx][1] 
+#        if value == 17.38:
+#            print(data[idx], value)
+#            print(data)
+        data.pop(idx)
+        return label
     raise ValueError
 
 if __name__ == '__main__':
