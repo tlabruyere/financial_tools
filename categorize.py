@@ -1,6 +1,7 @@
 import csv_parser
 from transactions import Transaction_Mgr, read_chase_transaction_csv
 from logger_config import setup_logger
+from data_extraction import get_cat_from_flat
 log = setup_logger(__name__)
 
 class Category:
@@ -45,6 +46,18 @@ class Category_Mgr(object):
         if name in self._categories:
             return self._categories[name]
         return None
+
+def categorize_it(flat_data, trans_mgr):
+    idx = 0
+    for key in trans_mgr._transactions.keys():
+        for trans in trans_mgr.get_transactions(key):
+            try:
+                trans._my_category = get_cat_from_flat(flat_data, -1*trans._ammount)
+            except ValueError as e:
+                print("could not find transaction {} for amount: {}".format(trans._description, -1*trans._ammount))
+                idx+=1
+    return idx
+
 
 if __name__ == '__main__':
     cat_mgr = Category_Mgr('categories.csv')
