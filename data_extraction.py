@@ -21,7 +21,7 @@ def split_transactions(row):
         minus_sp = item.split('-')
         float_vec.append(s2f(minus_sp[0]))
         if len(minus_sp) >1:
-            float_vec.append(-1*s2f(minus_sp[1]))
+            [float_vec.append(-1*s2f(val)) for val in minus_sp[1:]]
     float_vec.sort()
     return float_vec
 
@@ -55,9 +55,6 @@ def get_cat_from_flat(data, value):
     idx = bisect_left(data, (value, ""))
     if idx != len(data) and data[idx][0] == value:
         label = data[idx][1] 
-#        if value == 17.38:
-#            print(data[idx], value)
-#            print(data)
         data.pop(idx)
         return label
     raise ValueError
@@ -70,6 +67,3 @@ if __name__ == '__main__':
     data = parse_extraction(f)
     mo_exp = flatten_data(data, 'May')
     print(mo_exp)
-
-
-#    print(data)

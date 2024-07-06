@@ -32,6 +32,16 @@ class Test_DataExtraction(unittest.TestCase):
         result = split_transactions(data)
         expect = [0.0]
         self.assertEqual(result, expect)
+        
+        data = '=99.96-0+229.03+92.16-5.00-10.00'
+        result = split_transactions(data)
+        expect = [-10.0, - 5.0, 0, 92.16, 99.96, 229.03]
+        self.assertEqual(result, expect)
+        
+        data = '=99.96-0+229.03+92.16-5.00-10.00+10.00'
+        result = split_transactions(data)
+        expect = [-10.0, - 5.0, 0, 10.00, 92.16, 99.96, 229.03]
+        self.assertEqual(result, expect)
 
     
     def test_get_cat_from_flat(self):

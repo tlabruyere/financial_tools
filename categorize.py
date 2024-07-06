@@ -56,6 +56,12 @@ def categorize_it(flat_data, trans_mgr):
             except ValueError as e:
                 print("could not find transaction {} for amount: {}".format(trans._description, -1*trans._ammount))
                 idx+=1
+    # remove 0 from file
+    while True:
+        try:
+            get_cat_from_flat(flat_data, 0.0)
+        except:
+            break
     return idx
 
 
