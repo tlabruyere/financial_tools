@@ -31,7 +31,22 @@ class Test_Categorize(unittest.TestCase):
         self.assertEqual(count, 0)
 
     def test_gen_category_from_transactions(self):
-        pass
+        amount = 1337
+        trans_mgr = self._build_trans_mgr((
+            '01/01/1901', 
+            '01/01/1901',
+            'test_01_desc',
+            'test_01_category',
+            'test_01_type',
+            -1*amount,
+            'test_01_memo',
+        ))
+        trans_mgr.get_transactions_by_desc('test_01_desc')[0].label = 'Groceries'
+        categorized = gen_category_from_transactions(trans_mgr)
+        expect = {
+           'Groceries': [-1*amount]
+        }
+        self.assertEqual(categorized, expect)
 
 
 if __name__ == '__main__':

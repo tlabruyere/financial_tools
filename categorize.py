@@ -51,15 +51,17 @@ class Category_Mgr(object):
         return None
 
 def categorize_it(flat_data, trans_mgr):
+    '''
+    Desc: Assign label to transaction in transaction manager if the same amount was found
+    '''
     idx = 0
     for key in trans_mgr.get_keys_by_desc():
         for trans in trans_mgr.get_transactions_by_desc(key):
-            if trans.label == None:
-                try:
-                    trans.label = get_cat_from_flat(flat_data, -1*trans._amount)
-                except ValueError as e:
-                    print("could not find transaction {} for amount: {}".format(trans._description, -1*trans._amount))
-                    idx+=1
+            try:
+                trans.label = get_cat_from_flat(flat_data, -1*trans._amount)
+            except ValueError as e:
+                print("could not find transaction {} for amount: {}".format(trans._description, -1*trans._amount))
+                idx+=1
     # remove 0 from file
     while True:
         try:
@@ -69,6 +71,9 @@ def categorize_it(flat_data, trans_mgr):
     return idx
 
 def gen_category_from_transactions(trans_mgr: Transaction_Mgr):
+    '''
+    Desc: convert transaction manager to dictionary with ; seperation
+    '''
     categorized = {}
     for key in trans_mgr.get_keys_by_desc():
         for trans in trans_mgr.get_transactions_by_desc(key):

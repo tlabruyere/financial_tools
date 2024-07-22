@@ -13,7 +13,7 @@ class Transaction:
     _type = ""
     _amount = ""
     _memo = ""
-    _my_category = ""
+    _my_category = None
 
     def __init__(self, transDate, postDate, desc, category, type, amount, memo):
         self.transaction_date = transDate
@@ -77,7 +77,7 @@ class Transaction:
     
     @label.setter 
     def label(self, value):
-        self.label = value
+        self._my_category = value
 
 class Chase_Transaction(Transaction):
     _date_format = "%m/%d/%Y"
