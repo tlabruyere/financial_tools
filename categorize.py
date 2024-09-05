@@ -91,6 +91,9 @@ def print_cat_out(trans_mgr: Transaction_Mgr, cat_order: list):
         else:
             lines.append('{};='.format(cat) + '+'.join([str(-1*x) for x in categorized[cat]]))
     return lines
+
+def fix_transactions(trans_mgr: Transaction_Mgr):
+    pass
     
 
 if __name__ == '__main__':

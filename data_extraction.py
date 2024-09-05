@@ -45,6 +45,8 @@ def parse_extraction(file_path, delim=';'):
 
 def flatten_data(data, month):
     mon_expenses = []
+    if month not in data:
+        raise ValueError('{} not found in data provided'.format(month))
     for cat in data[month].keys():
         [mon_expenses.append((expense, cat)) for expense in data[month][cat]]
     mon_expenses = sorted(mon_expenses, key=lambda x:x[0])

@@ -1,10 +1,12 @@
 import csv
 import sys
 import datetime
+import uuid
 from logger_config import setup_logger
 log = setup_logger(__name__)
 
 class Transaction:
+    _unique_id = None
     _date_format = "%m/%d/%Y"
     _transaction_date = ""
     _post_date = ""
@@ -16,6 +18,7 @@ class Transaction:
     _my_category = None
 
     def __init__(self, transDate, postDate, desc, category, type, amount, memo):
+        self._unique_id  = str(uuid.uuid4())
         self.transaction_date = transDate
         self.post_date = postDate
         self._description = desc
@@ -32,6 +35,9 @@ class Transaction:
             ' Type: ' + self._type + \
             ' Amount: ' + str(self._amount) + \
             ' Memo: ' + self._memo
+    @property
+    def id(self):
+        return self._unique_id
 
     @property 
     def transaction_date(self):
@@ -54,6 +60,10 @@ class Transaction:
             self._post_date = datetime.datetime.strptime(value, self._date_format)
         else:
             self._post_date = value
+
+    @property
+    def description(self):
+        return self._description
 
     @property 
     def category(self):
@@ -105,30 +115,49 @@ class Chase_Transaction(Transaction):
 class Transaction_Mgr(object):
     _transactions_by_desc = None
     _transactions_by_date = None # turn to an ordered dictionary by date
+    _transactions_by_id = None # turn to an ordered dictionary by date
     _total = 0
 
     def __init__(self):
         self._transactions_by_desc = {}
         self._transactions_by_date = {}
+        self._transactions_by_id = {}
 
-    def _add_by_desc(self, trans: Transaction):
-        if not trans._description in self._transactions_by_desc:
-            self._transactions_by_desc[trans._description] = []
-        self._transactions_by_desc[trans._description].append(trans)
+    #TODO: Rewrite this dicionary save to be 1 func where we pass the dictionary
+    def _add_by_desc(self, desc: str, unique_id: str):
+        if not desc in self._transactions_by_desc:
+            self._transactions_by_desc[desc] = []
+        self._transactions_by_desc[desc].append(unique_id)
+    # 
+    def _add_by_date(self, date: datetime, unique_id: str):
+        if not date in self._transactions_by_date:
+            self._transactions_by_date[date] = []
+        self._transactions_by_date[date].append(unique_id)
     
-    def _add_by_date(self, trans: Transaction):
-        if not trans._transaction_date in self._transactions_by_date:
-            self._transactions_by_date[trans._transaction_date] = []
-        self._transactions_by_date[trans._transaction_date].append(trans)
+    def update_trans(self, id: str, trans: Transaction):
+        if not id in self._transactions_by_id:
+            raise ValueError
+        self._transactions_by_id[id] = trans
+
+    def set_label_by_id(self, id, value):
+        if not id in self._transactions_by_id:
+            raise ValueError
+        self._transactions_by_id[id].label = value
      
     def add(self, trans: Transaction):
-        self._add_by_date(trans)
-        self._add_by_desc(trans)
-        self._total+=1
+        self._add_by_date(trans.transaction_date, trans.id)
+        self._add_by_desc(trans.description, trans.id)
+        self._transactions_by_id[trans.id] = trans
+        self._total+=1 
+
+    def get(self, key):
+        if key in self._transactions_by_id:
+            return self._transactions_by_id[key]
+        raise ValueError
 
     def get_transactions_by_desc(self, key):
         if key in self._transactions_by_desc:
-            return self._transactions_by_desc[key]
+            return [self._transactions_by_id[x] for x in self._transactions_by_desc[key]]
         raise ValueError
     
     def get_keys_by_desc(self):
@@ -136,13 +165,24 @@ class Transaction_Mgr(object):
     
     def get_keys_by_date(self):
         return self._transactions_by_date.keys()
+    
+    def get_keys(self):
+        return self._transactions_by_id.keys()
 
     def get_transactions_by_date(self, key):
         if key in self._transactions_by_date:
-            return self._transactions_by_date[key]
+            return [self._transactions_by_id[x] for x in self._transactions_by_date[key]]
         raise ValueError
     # maybe add an interator
 
+def add_combine_transaction_mgr(out: Transaction_Mgr, combine: Transaction_Mgr):
+    '''
+    Desc: takes two transaction managers and combines it into one where out will contain all the data
+    '''
+    for trans_desc in combine.get_keys_by_desc():
+        for trans in combine.get_transactions_by_desc(trans_desc):
+            out.add(trans)
+    return out
 
 def read_chase_transaction_csv(filePath, trans_mgr=None):
     if not trans_mgr:
